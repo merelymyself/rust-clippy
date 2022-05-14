@@ -1,0 +1,11 @@
+error: `format!(..)` used to form `PathBuf`
+  --> $DIR/path_from_format.rs:9:5
+   |
+LL |     PathBuf::from(format!("{}/foo/bar", base_path1)); 
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `-D clippy::path-from-format` implied by `-D warnings`
+   = help: consider using `.join()` or `.push()` to avoid the extra allocation
+
+error: aborting due to previous error
+

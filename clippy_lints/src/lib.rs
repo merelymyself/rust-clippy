@@ -1,4 +1,4 @@
-#![feature(array_windows)]
+#!feature(array_windows)]
 #![feature(binary_heap_into_iter_sorted)]
 #![feature(box_patterns)]
 #![feature(control_flow_enum)]
@@ -326,6 +326,8 @@ mod panic_unimplemented;
 mod partialeq_ne_impl;
 mod partialeq_to_none;
 mod pass_by_ref_or_value;
+mod path_buf_push_overwrite;
+mod path_from_format;
 mod pattern_type_mismatch;
 mod precedence;
 mod ptr;
@@ -902,6 +904,7 @@ pub fn register_plugins(store: &mut rustc_lint::LintStore, sess: &Session, conf:
     store.register_late_pass(|| Box::new(unused_peekable::UnusedPeekable));
     store.register_early_pass(|| Box::new(multi_assignments::MultiAssignments));
     store.register_late_pass(|| Box::new(bool_to_int_with_if::BoolToIntWithIf));
+    store.register_late_pass(|| Box::new(path_from_format::PathFromFormat));
     // add lints here, do not remove this comment, it's used in `new_lint`
 }
 
