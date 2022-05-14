@@ -1,28 +1,29 @@
 use clippy_utils::diagnostics::span_lint_and_help;
-use clippy_utils::ty::is_type_diagnostic_item;
-use clippy_utils::{match_qpath, paths, peel_hir_expr_refs};
-use rustc_hir::{StmtKind,BorrowKind, Mutability, BindingAnnotation, PatKind, Expr, ExprKind};
+use clippy_utils::match_qpath;
+use rustc_hir::{Expr, ExprKind};
 use rustc_lint::{LateContext, LateLintPass};
 use rustc_session::{declare_lint_pass, declare_tool_lint};
 use rustc_span::sym;
 
 declare_clippy_lint! {
     /// ### What it does
+    /// Checks for `PathBuf::From(format!(..))` calls.
     ///
     /// ### Why is this bad?
+    /// It is not OS-agnostic, and can be harder to read.
     ///
     /// ### Example
     /// ```rust
-    /// // example code where clippy issues a warning
+    /// PathBuf::from(format!("{}/foo/bar", base_path));
     /// ```
     /// Use instead:
     /// ```rust
-    /// // example code which does not raise clippy warning
+    /// Path::new(base_path).join("foo").join("bar")
     /// ```
     #[clippy::version = "1.62.0"]
     pub PATH_FROM_FORMAT,
     pedantic,
-    "default lint description"
+    "builds a `PathBuf` from a format macro"
 }
 
 declare_lint_pass!(PathFromFormat => [PATH_FROM_FORMAT]);
@@ -66,7 +67,7 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
             // if let Some(trailing_expr) = block.expr;
             // if let ExprKind::Path(ref qpath5) = trailing_expr.kind;
             // if match_qpath(qpath5, &["res"]);
-            then {    
+            then {
                 span_lint_and_help(
                     cx,
                     PATH_FROM_FORMAT,
@@ -79,4 +80,4 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
             }
         }
     }
-}   
+}
