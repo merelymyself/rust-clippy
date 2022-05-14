@@ -341,6 +341,7 @@ mod panic_unimplemented;
 mod partialeq_ne_impl;
 mod pass_by_ref_or_value;
 mod path_buf_push_overwrite;
+mod path_from_format;
 mod pattern_type_mismatch;
 mod precedence;
 mod ptr;
@@ -915,6 +916,7 @@ pub fn register_plugins(store: &mut rustc_lint::LintStore, sess: &Session, conf:
     store.register_early_pass(|| Box::new(unused_rounding::UnusedRounding));
     store.register_early_pass(move || Box::new(almost_complete_letter_range::AlmostCompleteLetterRange::new(msrv)));
     store.register_late_pass(|| Box::new(swap_ptr_to_ref::SwapPtrToRef));
+    store.register_late_pass(|| Box::new(path_from_format::PathFromFormat));
     // add lints here, do not remove this comment, it's used in `new_lint`
 }
 

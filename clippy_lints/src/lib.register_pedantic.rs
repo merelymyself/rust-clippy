@@ -77,6 +77,7 @@ store.register_group(true, "clippy::pedantic", Some("clippy_pedantic"), vec![
     LintId::of(non_expressive_names::SIMILAR_NAMES),
     LintId::of(pass_by_ref_or_value::LARGE_TYPES_PASSED_BY_VALUE),
     LintId::of(pass_by_ref_or_value::TRIVIALLY_COPY_PASS_BY_REF),
+    LintId::of(path_from_format::PATH_FROM_FORMAT),
     LintId::of(ranges::RANGE_MINUS_ONE),
     LintId::of(ranges::RANGE_PLUS_ONE),
     LintId::of(redundant_else::REDUNDANT_ELSE),
