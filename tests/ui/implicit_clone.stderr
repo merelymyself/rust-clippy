@@ -73,4 +73,3 @@ LL |     let _ = pathbuf_ref.to_path_buf();
    |             ^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `(**pathbuf_ref).clone()`
 
 error: aborting due to 12 previous errors
-

@@ -68,53 +68,19 @@ error: redundant closure
 LL |     let e: std::vec::Vec<char> = vec!['a', 'b', 'c'].iter().map(|c| c.to_ascii_uppercase()).collect();
    |                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace the closure with the method itself: `char::to_ascii_uppercase`
 
-error: redundant closure
-  --> $DIR/eta.rs:160:22
-   |
-LL |     requires_fn_once(|| x());
-   |                      ^^^^^^ help: replace the closure with the function itself: `x`
+thread 'rustc' panicked at 'index out of bounds: the len is 0 but the index is 0', clippy_lints/src/path_from_format.rs:39:41
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
-error: redundant closure
-  --> $DIR/eta.rs:167:27
-   |
-LL |     let a = Some(1u8).map(|a| foo_ptr(a));
-   |                           ^^^^^^^^^^^^^^ help: replace the closure with the function itself: `foo_ptr`
+error: internal compiler error: unexpected panic
 
-error: redundant closure
-  --> $DIR/eta.rs:172:27
-   |
-LL |     let a = Some(1u8).map(|a| closure(a));
-   |                           ^^^^^^^^^^^^^^ help: replace the closure with the function itself: `closure`
+note: the compiler unexpectedly panicked. this is a bug.
 
-error: redundant closure
-  --> $DIR/eta.rs:204:28
-   |
-LL |     x.into_iter().for_each(|x| add_to_res(x));
-   |                            ^^^^^^^^^^^^^^^^^ help: replace the closure with the function itself: `&mut add_to_res`
+note: we would appreciate a bug report: https://github.com/rust-lang/rust-clippy/issues/new
 
-error: redundant closure
-  --> $DIR/eta.rs:205:28
-   |
-LL |     y.into_iter().for_each(|x| add_to_res(x));
-   |                            ^^^^^^^^^^^^^^^^^ help: replace the closure with the function itself: `&mut add_to_res`
+note: Clippy version: clippy 0.1.62 (01d75b195 2022-05-13)
 
-error: redundant closure
-  --> $DIR/eta.rs:206:28
-   |
-LL |     z.into_iter().for_each(|x| add_to_res(x));
-   |                            ^^^^^^^^^^^^^^^^^ help: replace the closure with the function itself: `add_to_res`
-
-error: redundant closure
-  --> $DIR/eta.rs:213:21
-   |
-LL |         Some(1).map(|n| closure(n));
-   |                     ^^^^^^^^^^^^^^ help: replace the closure with the function itself: `&mut closure`
-
-error: redundant closure
-  --> $DIR/eta.rs:217:21
-   |
-LL |         Some(1).map(|n| in_loop(n));
-   |                     ^^^^^^^^^^^^^^ help: replace the closure with the function itself: `in_loop`
-
-error: aborting due to 19 previous errors
+query stack during panic:
+#0 [analysis] running analysis passes on this crate
+end of query stack
+error: aborting due to 11 previous errors
 
