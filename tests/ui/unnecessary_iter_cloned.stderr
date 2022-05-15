@@ -30,6 +30,3 @@ help: remove this `&`
 LL -         let other = match get_file_path(&t) {
 LL +         let other = match get_file_path(t) {
    |
-
-error: aborting due to 2 previous errors
-

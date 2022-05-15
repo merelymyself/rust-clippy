@@ -64,47 +64,19 @@ error: called `.as_ref().map(PathBuf::as_path)` on an Option value. This can be 
 LL |     let _ = Some(PathBuf::new()).as_ref().map(PathBuf::as_path);
    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try using as_deref instead: `Some(PathBuf::new()).as_deref()`
 
-error: called `.as_ref().map(Vec::as_slice)` on an Option value. This can be done more directly by calling `Some(Vec::<()>::new()).as_deref()` instead
-  --> $DIR/option_as_ref_deref.rs:31:13
-   |
-LL |     let _ = Some(Vec::<()>::new()).as_ref().map(Vec::as_slice);
-   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try using as_deref instead: `Some(Vec::<()>::new()).as_deref()`
+thread 'rustc' panicked at 'index out of bounds: the len is 0 but the index is 0', clippy_lints/src/path_from_format.rs:39:41
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
-error: called `.as_mut().map(Vec::as_mut_slice)` on an Option value. This can be done more directly by calling `Some(Vec::<()>::new()).as_deref_mut()` instead
-  --> $DIR/option_as_ref_deref.rs:32:13
-   |
-LL |     let _ = Some(Vec::<()>::new()).as_mut().map(Vec::as_mut_slice);
-   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try using as_deref_mut instead: `Some(Vec::<()>::new()).as_deref_mut()`
+error: internal compiler error: unexpected panic
 
-error: called `.as_ref().map(|x| x.deref())` on an Option value. This can be done more directly by calling `opt.as_deref()` instead
-  --> $DIR/option_as_ref_deref.rs:34:13
-   |
-LL |     let _ = opt.as_ref().map(|x| x.deref());
-   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try using as_deref instead: `opt.as_deref()`
+note: the compiler unexpectedly panicked. this is a bug.
 
-error: called `.as_mut().map(|x| x.deref_mut())` on an Option value. This can be done more directly by calling `opt.clone().as_deref_mut()` instead
-  --> $DIR/option_as_ref_deref.rs:35:13
-   |
-LL |     let _ = opt.clone().as_mut().map(|x| x.deref_mut()).map(|x| x.len());
-   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try using as_deref_mut instead: `opt.clone().as_deref_mut()`
+note: we would appreciate a bug report: https://github.com/rust-lang/rust-clippy/issues/new
 
-error: called `.as_ref().map(|x| &**x)` on an Option value. This can be done more directly by calling `opt.as_deref()` instead
-  --> $DIR/option_as_ref_deref.rs:42:13
-   |
-LL |     let _ = opt.as_ref().map(|x| &**x);
-   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try using as_deref instead: `opt.as_deref()`
+note: Clippy version: clippy 0.1.62 (01d75b195 2022-05-13)
 
-error: called `.as_mut().map(|x| &mut **x)` on an Option value. This can be done more directly by calling `opt.as_deref_mut()` instead
-  --> $DIR/option_as_ref_deref.rs:43:13
-   |
-LL |     let _ = opt.as_mut().map(|x| &mut **x);
-   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try using as_deref_mut instead: `opt.as_deref_mut()`
-
-error: called `.as_ref().map(std::ops::Deref::deref)` on an Option value. This can be done more directly by calling `opt.as_deref()` instead
-  --> $DIR/option_as_ref_deref.rs:46:13
-   |
-LL |     let _ = opt.as_ref().map(std::ops::Deref::deref);
-   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try using as_deref instead: `opt.as_deref()`
-
-error: aborting due to 17 previous errors
+query stack during panic:
+#0 [analysis] running analysis passes on this crate
+end of query stack
+error: aborting due to 10 previous errors
 

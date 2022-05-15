@@ -1,7 +1,7 @@
 error: `format!(..)` used to form `PathBuf`
   --> $DIR/path_from_format.rs:9:5
    |
-LL |     PathBuf::from(format!("{}/foo/bar", base_path1)); 
+LL |     PathBuf::from(format!("{}/foo/bar", base_path1));
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using `.join()` to avoid the extra allocation: `Path::new(base_path1).join("foo").join("bar")`
    |
    = note: `-D clippy::path-from-format` implied by `-D warnings`

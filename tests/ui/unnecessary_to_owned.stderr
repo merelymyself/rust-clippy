@@ -445,36 +445,6 @@ error: unnecessary use of `to_vec`
 LL |     let _ = [std::path::PathBuf::new()][..].to_vec().into_iter();
    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: use: `[std::path::PathBuf::new()][..].iter().cloned()`
 
-error: unnecessary use of `to_owned`
-  --> $DIR/unnecessary_to_owned.rs:131:13
-   |
-LL |     let _ = [std::path::PathBuf::new()][..].to_owned().into_iter();
-   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: use: `[std::path::PathBuf::new()][..].iter().cloned()`
-
-error: unnecessary use of `to_vec`
-  --> $DIR/unnecessary_to_owned.rs:133:13
-   |
-LL |     let _ = IntoIterator::into_iter(slice.to_vec());
-   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: use: `slice.iter().copied()`
-
-error: unnecessary use of `to_owned`
-  --> $DIR/unnecessary_to_owned.rs:134:13
-   |
-LL |     let _ = IntoIterator::into_iter(slice.to_owned());
-   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: use: `slice.iter().copied()`
-
-error: unnecessary use of `to_vec`
-  --> $DIR/unnecessary_to_owned.rs:135:13
-   |
-LL |     let _ = IntoIterator::into_iter([std::path::PathBuf::new()][..].to_vec());
-   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: use: `[std::path::PathBuf::new()][..].iter().cloned()`
-
-error: unnecessary use of `to_owned`
-  --> $DIR/unnecessary_to_owned.rs:136:13
-   |
-LL |     let _ = IntoIterator::into_iter([std::path::PathBuf::new()][..].to_owned());
-   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: use: `[std::path::PathBuf::new()][..].iter().cloned()`
-
 error: unnecessary use of `to_vec`
   --> $DIR/unnecessary_to_owned.rs:198:14
    |
@@ -510,4 +480,3 @@ LL |         Box::new(build(y.to_string()))
    |                        ^^^^^^^^^^^^^ help: use: `y`
 
 error: aborting due to 78 previous errors
-
