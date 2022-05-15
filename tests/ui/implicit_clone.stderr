@@ -37,37 +37,37 @@ LL |     let _ = kitten.to_owned();
    |             ^^^^^^^^^^^^^^^^^ help: consider using: `kitten.clone()`
 
 error: implicitly cloning a `PathBuf` by calling `to_owned` on its dereferenced type
-  --> $DIR/implicit_clone.rs:98:13
+  --> $DIR/implicit_clone.rs:97:13
    |
 LL |     let _ = pathbuf.to_owned();
    |             ^^^^^^^^^^^^^^^^^^ help: consider using: `pathbuf.clone()`
 
 error: implicitly cloning a `PathBuf` by calling `to_path_buf` on its dereferenced type
-  --> $DIR/implicit_clone.rs:99:13
+  --> $DIR/implicit_clone.rs:98:13
    |
 LL |     let _ = pathbuf.to_path_buf();
    |             ^^^^^^^^^^^^^^^^^^^^^ help: consider using: `pathbuf.clone()`
 
 error: implicitly cloning a `OsString` by calling `to_owned` on its dereferenced type
-  --> $DIR/implicit_clone.rs:102:13
+  --> $DIR/implicit_clone.rs:101:13
    |
 LL |     let _ = os_string.to_owned();
    |             ^^^^^^^^^^^^^^^^^^^^ help: consider using: `os_string.clone()`
 
 error: implicitly cloning a `OsString` by calling `to_os_string` on its dereferenced type
-  --> $DIR/implicit_clone.rs:103:13
+  --> $DIR/implicit_clone.rs:102:13
    |
 LL |     let _ = os_string.to_os_string();
    |             ^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `os_string.clone()`
 
 error: implicitly cloning a `PathBuf` by calling `to_path_buf` on its dereferenced type
-  --> $DIR/implicit_clone.rs:114:13
+  --> $DIR/implicit_clone.rs:113:13
    |
 LL |     let _ = pathbuf_ref.to_path_buf();
    |             ^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `(*pathbuf_ref).clone()`
 
 error: implicitly cloning a `PathBuf` by calling `to_path_buf` on its dereferenced type
-  --> $DIR/implicit_clone.rs:117:13
+  --> $DIR/implicit_clone.rs:116:13
    |
 LL |     let _ = pathbuf_ref.to_path_buf();
    |             ^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using: `(**pathbuf_ref).clone()`

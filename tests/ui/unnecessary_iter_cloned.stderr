@@ -1,14 +1,35 @@
-thread 'rustc' panicked at 'index out of bounds: the len is 0 but the index is 0', clippy_lints/src/path_from_format.rs:39:41
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: unnecessary use of `copied`
+  --> $DIR/unnecessary_iter_cloned.rs:31:22
+   |
+LL |     for (t, path) in files.iter().copied() {
+   |                      ^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `-D clippy::unnecessary-to-owned` implied by `-D warnings`
+help: use
+   |
+LL |     for (t, path) in files {
+   |                      ~~~~~
+help: remove this `&`
+   |
+LL -         let other = match get_file_path(&t) {
+LL +         let other = match get_file_path(t) {
+   | 
 
-error: internal compiler error: unexpected panic
+error: unnecessary use of `copied`
+  --> $DIR/unnecessary_iter_cloned.rs:46:22
+   |
+LL |     for (t, path) in files.iter().copied() {
+   |                      ^^^^^^^^^^^^^^^^^^^^^
+   |
+help: use
+   |
+LL |     for (t, path) in files.iter() {
+   |                      ~~~~~~~~~~~~
+help: remove this `&`
+   |
+LL -         let other = match get_file_path(&t) {
+LL +         let other = match get_file_path(t) {
+   | 
 
-note: the compiler unexpectedly panicked. this is a bug.
+error: aborting due to 2 previous errors
 
-note: we would appreciate a bug report: https://github.com/rust-lang/rust-clippy/issues/new
-
-note: Clippy version: clippy 0.1.62 (01d75b195 2022-05-13)
-
-query stack during panic:
-#0 [analysis] running analysis passes on this crate
-end of query stack

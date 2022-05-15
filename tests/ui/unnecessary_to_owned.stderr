@@ -445,19 +445,69 @@ error: unnecessary use of `to_vec`
 LL |     let _ = [std::path::PathBuf::new()][..].to_vec().into_iter();
    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: use: `[std::path::PathBuf::new()][..].iter().cloned()`
 
-thread 'rustc' panicked at 'index out of bounds: the len is 0 but the index is 0', clippy_lints/src/path_from_format.rs:39:41
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: unnecessary use of `to_owned`
+  --> $DIR/unnecessary_to_owned.rs:131:13
+   |
+LL |     let _ = [std::path::PathBuf::new()][..].to_owned().into_iter();
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: use: `[std::path::PathBuf::new()][..].iter().cloned()`
 
-error: internal compiler error: unexpected panic
+error: unnecessary use of `to_vec`
+  --> $DIR/unnecessary_to_owned.rs:133:13
+   |
+LL |     let _ = IntoIterator::into_iter(slice.to_vec());
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: use: `slice.iter().copied()`
 
-note: the compiler unexpectedly panicked. this is a bug.
+error: unnecessary use of `to_owned`
+  --> $DIR/unnecessary_to_owned.rs:134:13
+   |
+LL |     let _ = IntoIterator::into_iter(slice.to_owned());
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: use: `slice.iter().copied()`
 
-note: we would appreciate a bug report: https://github.com/rust-lang/rust-clippy/issues/new
+error: unnecessary use of `to_vec`
+  --> $DIR/unnecessary_to_owned.rs:135:13
+   |
+LL |     let _ = IntoIterator::into_iter([std::path::PathBuf::new()][..].to_vec());
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: use: `[std::path::PathBuf::new()][..].iter().cloned()`
 
-note: Clippy version: clippy 0.1.62 (01d75b195 2022-05-13)
+error: unnecessary use of `to_owned`
+  --> $DIR/unnecessary_to_owned.rs:136:13
+   |
+LL |     let _ = IntoIterator::into_iter([std::path::PathBuf::new()][..].to_owned());
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: use: `[std::path::PathBuf::new()][..].iter().cloned()`
 
-query stack during panic:
-#0 [analysis] running analysis passes on this crate
-end of query stack
-error: aborting due to 69 previous errors
+error: unnecessary use of `to_vec`
+  --> $DIR/unnecessary_to_owned.rs:198:14
+   |
+LL |     for t in file_types.to_vec() {
+   |              ^^^^^^^^^^^^^^^^^^^
+   |
+help: use
+   |
+LL |     for t in file_types {
+   |              ~~~~~~~~~~
+help: remove this `&`
+   |
+LL -         let path = match get_file_path(&t) {
+LL +         let path = match get_file_path(t) {
+   | 
+
+error: unnecessary use of `to_vec`
+  --> $DIR/unnecessary_to_owned.rs:221:14
+   |
+LL |     let _ = &["x"][..].to_vec().into_iter();
+   |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: use: `["x"][..].iter().cloned()`
+
+error: unnecessary use of `to_vec`
+  --> $DIR/unnecessary_to_owned.rs:226:14
+   |
+LL |     let _ = &["x"][..].to_vec().into_iter();
+   |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: use: `["x"][..].iter().copied()`
+
+error: unnecessary use of `to_string`
+  --> $DIR/unnecessary_to_owned.rs:273:24
+   |
+LL |         Box::new(build(y.to_string()))
+   |                        ^^^^^^^^^^^^^ help: use: `y`
+
+error: aborting due to 78 previous errors
 

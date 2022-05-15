@@ -6,6 +6,7 @@ use rustc_hir::{Expr, ExprKind};
 use rustc_lint::{LateContext, LateLintPass};
 use rustc_session::{declare_lint_pass, declare_tool_lint};
 use rustc_span::sym;
+use std::fmt::Write as _;
 
 declare_clippy_lint! {
     /// ### What it does
@@ -33,10 +34,10 @@ declare_lint_pass!(PathFromFormat => [PATH_FROM_FORMAT]);
 impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
     fn check_expr(&mut self, cx: &LateContext<'tcx>, expr: &'tcx Expr<'_>) {
         if_chain! {
-            if let ExprKind::Call(_, ref args) = expr.kind;
+            if let ExprKind::Call(_, args) = expr.kind;
             if let ty = cx.typeck_results().expr_ty(expr);
             if is_type_diagnostic_item(cx, ty, sym::PathBuf);
-            if args.len() > 0;
+            if !args.is_empty();
             if let Some(macro_def_id) = args[0].span.ctxt().outer_expn_data().macro_def_id;
             if cx.tcx.get_diagnostic_name(macro_def_id) == Some(sym::format_macro);
             then {
@@ -44,7 +45,7 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
                 let split_expr: Vec<&str> = full_expr.split('!').collect();
                 let args_to_macro = split_expr[1];
                 let replaced = args_to_macro.replace('(', "").replace(')', "");
-                let unformatted: Vec<&str> = replaced.split(",").collect();
+                let unformatted: Vec<&str> = replaced.split(',').collect();
                 let mut push_targets: Vec<String> = Vec::new();
                 let mut temp_string = String::new();
                 for c in unformatted[0].chars() {
@@ -65,20 +66,20 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
                 }
                 for target in push_targets {
                     let target_processed =
-                        if target != unformatted[1].replace(' ', "") {
+                        if target == unformatted[1].replace(' ', "") {
+                            target
+                        }
+                        else {
                             let mut s = String::from("\"");
                             s.push_str(&target);
                             s.push('"');
                             s
-                        }
-                        else {
-                            target
                         };
                     if temp_string.is_empty() {
-                        temp_string.push_str(&format!("Path::new({})", target_processed));
+                        let _ = write!(temp_string, "Path::new({})", target_processed);
                     }
                     else {
-                        temp_string.push_str(&format!(".join({})", target_processed));
+                        let _ = write!(temp_string, ".join({})", target_processed);
                     }
                 }
                 span_lint_and_sugg(
