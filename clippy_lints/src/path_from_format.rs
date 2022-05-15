@@ -36,6 +36,7 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
             if let ExprKind::Call(_, ref args) = expr.kind;
             if let ty = cx.typeck_results().expr_ty(expr);
             if is_type_diagnostic_item(cx, ty, sym::PathBuf);
+            if args.len() == 0;
             if let Some(macro_def_id) = args[0].span.ctxt().outer_expn_data().macro_def_id;
             if cx.tcx.get_diagnostic_name(macro_def_id) == Some(sym::format_macro);
             then {
