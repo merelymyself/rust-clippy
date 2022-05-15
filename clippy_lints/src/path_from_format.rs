@@ -1,11 +1,11 @@
 use clippy_utils::diagnostics::span_lint_and_sugg;
-use clippy_utils::ty::is_type_diagnostic_item;
 use clippy_utils::source::snippet;
+use clippy_utils::ty::is_type_diagnostic_item;
+use rustc_errors::Applicability;
 use rustc_hir::{Expr, ExprKind};
 use rustc_lint::{LateContext, LateLintPass};
 use rustc_session::{declare_lint_pass, declare_tool_lint};
 use rustc_span::sym;
-use rustc_errors::Applicability;
 
 declare_clippy_lint! {
     /// ### What it does
@@ -63,13 +63,13 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
                     temp_string = String::new();
                 }
                 for target in push_targets {
-                    let target_processed = 
+                    let target_processed =
                         if target != unformatted[1].replace(' ', "") {
                             let mut s = String::from("\"");
                             s.push_str(&target);
                             s.push('"');
                             s
-                        } 
+                        }
                         else {
                             target
                         };
