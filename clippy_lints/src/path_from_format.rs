@@ -21,7 +21,7 @@ declare_clippy_lint! {
     /// ```
     /// Use instead:
     /// ```rust
-    /// Path::new(base_path).join("foo").join("bar")
+    /// Path::new(base_path).join("foo").join("bar");
     /// ```
     #[clippy::version = "1.62.0"]
     pub PATH_FROM_FORMAT,
