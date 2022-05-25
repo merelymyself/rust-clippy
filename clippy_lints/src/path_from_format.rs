@@ -17,10 +17,14 @@ declare_clippy_lint! {
     ///
     /// ### Example
     /// ```rust
+    /// use std::path::PathBuf;
+    /// let base_path = "/base";
     /// PathBuf::from(format!("{}/foo/bar", base_path));
     /// ```
     /// Use instead:
     /// ```rust
+    /// use std::path::Path;
+    /// let base_path = "/base";
     /// Path::new(base_path).join("foo").join("bar");
     /// ```
     #[clippy::version = "1.62.0"]
