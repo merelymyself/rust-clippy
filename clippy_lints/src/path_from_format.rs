@@ -1,6 +1,7 @@
 use clippy_utils::diagnostics::span_lint_and_sugg;
 use clippy_utils::source::snippet;
 use clippy_utils::ty::is_type_diagnostic_item;
+use clippy_utils::macros::{root_macro_call, FormatArgsExpn};
 use rustc_errors::Applicability;
 use rustc_hir::{Expr, ExprKind};
 use rustc_lint::{LateContext, LateLintPass};
@@ -42,8 +43,9 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
             if let ty = cx.typeck_results().expr_ty(expr);
             if is_type_diagnostic_item(cx, ty, sym::PathBuf);
             if !args.is_empty();
-            if let Some(macro_def_id) = args[0].span.ctxt().outer_expn_data().macro_def_id;
-            if cx.tcx.get_diagnostic_name(macro_def_id) == Some(sym::format_macro);
+            if let Some(macro_call) = root_macro_call(args[0].span);
+            if cx.tcx.item_name(macro_call.def_id) == sym::format;
+            if let Some(format_args) = FormatArgsExpn::find_nested(cx, &args[0], macro_call.expn);
             then {
                 let full_expr = snippet(cx, expr.span, "error").to_string();
                 let split_expr: Vec<&str> = full_expr.split('!').collect();

@@ -1,5 +1,5 @@
 error: `format!(..)` used to form `PathBuf`
-  --> $DIR/path_from_format.rs:9:5
+  --> $DIR/path_from_format.rs:7:5
    |
 LL |     PathBuf::from(format!("{}/foo/bar", base_path1));
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using `.join()` to avoid the extra allocation: `Path::new(base_path1).join("foo").join("bar")`
