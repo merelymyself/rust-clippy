@@ -1,7 +1,7 @@
-use clippy_utils::diagnostics::{span_lint_and_sugg, span_lint_and_help};
+use clippy_utils::diagnostics::{span_lint_and_help, span_lint_and_sugg};
+use clippy_utils::macros::{root_macro_call, FormatArgsExpn};
 use clippy_utils::source::snippet_with_applicability;
 use clippy_utils::ty::is_type_diagnostic_item;
-use clippy_utils::macros::{root_macro_call, FormatArgsExpn};
 use rustc_errors::Applicability;
 use rustc_hir::{Expr, ExprKind};
 use rustc_lint::{LateContext, LateLintPass};
@@ -62,7 +62,7 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
                         "`format!(..)` used to form `PathBuf`",
                         None,
                         "consider using `.join()` to avoid the extra allocation",
-                    ); 
+                    );
                     return;
                 }
                 let sugg = {
