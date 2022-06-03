@@ -1,5 +1,5 @@
-use clippy_utils::diagnostics::span_lint_and_sugg;
-use clippy_utils::source::snippet;
+use clippy_utils::diagnostics::{span_lint_and_sugg, span_lint_and_help};
+use clippy_utils::source::snippet_with_applicability;
 use clippy_utils::ty::is_type_diagnostic_item;
 use clippy_utils::macros::{root_macro_call, FormatArgsExpn};
 use rustc_errors::Applicability;
@@ -7,7 +7,6 @@ use rustc_hir::{Expr, ExprKind};
 use rustc_lint::{LateContext, LateLintPass};
 use rustc_session::{declare_lint_pass, declare_tool_lint};
 use rustc_span::sym;
-use std::fmt::Write as _;
 
 declare_clippy_lint! {
     /// ### What it does
@@ -46,55 +45,53 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
             if let Some(macro_call) = root_macro_call(args[0].span);
             if cx.tcx.item_name(macro_call.def_id) == sym::format;
             if let Some(format_args) = FormatArgsExpn::find_nested(cx, &args[0], macro_call.expn);
+            let mut applicability = Applicability::MachineApplicable;
+            let format_args_snip = snippet_with_applicability(cx, format_args.inputs_span(), "..", &mut applicability);
+            if let Some(end_of_literal) = format_args_snip.find("\",");
             then {
-                let full_expr = snippet(cx, expr.span, "error").to_string();
-                let split_expr: Vec<&str> = full_expr.split('!').collect();
-                let args_to_macro = split_expr[1];
-                let replaced = args_to_macro.replace('(', "").replace(')', "");
-                let unformatted: Vec<&str> = replaced.split(',').collect();
-                let mut push_targets: Vec<String> = Vec::new();
-                let mut temp_string = String::new();
-                for c in unformatted[0].chars() {
-                    if c == '/' || c == '\\' {
-                        push_targets.push(temp_string.clone());
-                        temp_string = String::new();
-                    }
-                    else if c == '}' {
-                        temp_string.push_str(&unformatted[1].replace(' ', ""));
-                    }
-                    else if c != '{' && c != '"' {
-                        temp_string.push(c);
-                    }
+                let (literal, vars) = format_args_snip.split_at(end_of_literal);
+                let mut literal = literal.to_string();
+                literal.remove(0);
+                let v: Vec<&str> = literal.split("{}").collect();
+                let real_vars = vars.strip_prefix("\", ").unwrap_or(vars);
+                if v.len() != 2 || real_vars.contains(',') {
+                    span_lint_and_help(
+                        cx,
+                        PATH_FROM_FORMAT,
+                        expr.span,
+                        "`format!(..)` used to form `PathBuf`",
+                        None,
+                        "consider using `.join()` to avoid the extra allocation",
+                    ); 
+                    return;
                 }
-                if !temp_string.is_empty() {
-                    push_targets.push(temp_string.clone());
-                    temp_string = String::new();
-                }
-                for target in push_targets {
-                    let target_processed =
-                        if target == unformatted[1].replace(' ', "") {
-                            target
+                let sugg = {
+                    if v[0].is_empty() {
+                        let mut str1 = v[1].to_string();
+                        if str1.starts_with('\\') || str1.starts_with('/') {
+                            str1.remove(0);
                         }
-                        else {
-                            let mut s = String::from("\"");
-                            s.push_str(&target);
-                            s.push('"');
-                            s
-                        };
-                    if temp_string.is_empty() {
-                        let _ = write!(temp_string, "Path::new({})", target_processed);
+                        format!("Path::new({real_vars}).join(\"{str1}\")")
+                    }
+                    else if v[1].is_empty() {
+                        let str1 = v[0].to_string();
+                        format!("Path::new(\"{str1}\").join({real_vars})")
                     }
                     else {
-                        let _ = write!(temp_string, ".join({})", target_processed);
+                        let (str1, mut str2) = (v[0].to_string(), v[1].to_string());
+                        if str2.starts_with('\\') || str2.starts_with('/') {
+                            str2.remove(0);
+                        }
+                        format!("Path::new(\"{str1}\").join({real_vars}).join(\"{str2}\")")
                     }
-                }
+                };
                 span_lint_and_sugg(
                     cx,
                     PATH_FROM_FORMAT,
                     expr.span,
                     "`format!(..)` used to form `PathBuf`",
                     "consider using `.join()` to avoid the extra allocation",
-                    temp_string,
+                    sugg,
                     Applicability::MaybeIncorrect,
                 );
             }

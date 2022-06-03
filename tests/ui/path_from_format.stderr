@@ -2,9 +2,27 @@ error: `format!(..)` used to form `PathBuf`
   --> $DIR/path_from_format.rs:7:5
    |
 LL |     PathBuf::from(format!("{}/foo/bar", base_path1));
-   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using `.join()` to avoid the extra allocation: `Path::new(base_path1).join("foo").join("bar")`
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using `.join()` to avoid the extra allocation: `Path::new(base_path1).join("foo/bar")`
    |
    = note: `-D clippy::path-from-format` implied by `-D warnings`
 
-error: aborting due to previous error
+error: `format!(..)` used to form `PathBuf`
+  --> $DIR/path_from_format.rs:8:5
+   |
+LL |     PathBuf::from(format!("/foo/bar/{}", base_path1));
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using `.join()` to avoid the extra allocation: `Path::new("/foo/bar/").join(base_path1)`
+
+error: `format!(..)` used to form `PathBuf`
+  --> $DIR/path_from_format.rs:9:5
+   |
+LL |     PathBuf::from(format!("/foo/{}/bar", base_path1));
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using `.join()` to avoid the extra allocation: `Path::new("/foo/").join(base_path1).join("bar")`
+
+error: `format!(..)` used to form `PathBuf`
+  --> $DIR/path_from_format.rs:10:5
+   |
+LL |     PathBuf::from(format!("foo/{}/bar", base_path1));
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using `.join()` to avoid the extra allocation: `Path::new("foo/").join(base_path1).join("bar")`
+
+error: aborting due to 4 previous errors
 
