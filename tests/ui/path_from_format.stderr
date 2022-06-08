@@ -24,5 +24,11 @@ error: `format!(..)` used to form `PathBuf`
 LL |     PathBuf::from(format!("foo/{}/bar", base_path1));
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using `.join()` to avoid the extra allocation: `Path::new("foo/").join(base_path1).join("bar")`
 
-error: aborting due to 4 previous errors
+error: `format!(..)` used to form `PathBuf`
+  --> $DIR/path_from_format.rs:11:5
+   |
+LL |     PathBuf::from(format!("foo/{base_path1}/bar"));
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using `.join()` to avoid the extra allocation: `Path::new("foo/").join(base_path1).join("bar")`
+
+error: aborting due to 5 previous errors
 

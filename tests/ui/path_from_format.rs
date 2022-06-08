@@ -8,4 +8,5 @@ fn main() {
     PathBuf::from(format!("/foo/bar/{}", base_path1));
     PathBuf::from(format!("/foo/{}/bar", base_path1));
     PathBuf::from(format!("foo/{}/bar", base_path1));
+    PathBuf::from(format!("foo/{base_path1}/bar"));
 }
