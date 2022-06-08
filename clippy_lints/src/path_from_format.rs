@@ -45,14 +45,14 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
             if let Some(macro_call) = root_macro_call(args[0].span);
             if cx.tcx.item_name(macro_call.def_id) == sym::format;
             if let Some(format_args) = FormatArgsExpn::find_nested(cx, &args[0], macro_call.expn);
-            let format_string_parts = format_args.format_string_parts;
-            let format_value_args = format_args.value_args;
             then {
-                let mut string_parts: Vec<&str> = format_string_parts.iter().map(|x| x.as_str()).collect();
+                let format_string_parts = format_args.format_string_parts;
+                let format_value_args = format_args.value_args;
+                let mut string_parts: Vec<&str> = format_string_parts.iter().map(rustc_span::Symbol::as_str).collect();
                 string_parts.push("");
                 let mut applicability = Applicability::MachineApplicable;
                 let real_vars: Vec<Sugg<'_>> = format_value_args.iter().map(|x| Sugg::hir_with_applicability(cx, x, "..", &mut applicability)).collect();
-                let order_of_real_vars: Vec<usize> = format_args.formatters.iter().map(|(x, _)| x.clone()).collect();
+                let order_of_real_vars: Vec<usize> = format_args.formatters.iter().map(|(x, _)| *x).collect();
                 let mut sugg = String::new();
                 for n in 0..real_vars.len() {
                     if n == 0 {
@@ -63,17 +63,15 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
                             sugg = format!("Path::new(\"{}\").join({y})", string_parts[0], y = real_vars[order_of_real_vars[0]]);
                         }
                     }
-                    else {
-                        if string_parts[n].is_empty() {
+                    else if string_parts[n].is_empty() {
                             sugg = format!("{sugg}.join({})", real_vars[order_of_real_vars[n]]);
+                    }
+                    else {
+                        let mut string = String::from(string_parts[n]);
+                        if string.starts_with('/') || string.starts_with('\\') {
+                            string.remove(0);
                         }
-                        else {
-                            let mut string = String::from(string_parts[n]);
-                            if string.starts_with('/') || string.starts_with('\\') {
-                                string.remove(0);
-                            }
-                            sugg = format!("{sugg}.join(\"{}\").join({y})", string, y = real_vars[order_of_real_vars[n]]);
-                        }
+                    sugg = format!("{sugg}.join(\"{}\").join({y})", string, y = real_vars[order_of_real_vars[n]]);
                     }
                 }
                 if !string_parts[real_vars.len()].is_empty() {
