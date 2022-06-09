@@ -56,14 +56,17 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
                 let order_of_real_vars: Vec<usize> = format_args.formatters.iter().map(|(x, _)| *x).collect();
                 let mut sugg = String::new();
                 for n in 0..real_vars.len() {
-                    if (!string_parts[n].is_empty() && !(string_parts[n].ends_with('/') || string_parts[n].ends_with('\\'))) || (!string_parts[n+1].is_empty() && (!(string_parts[n+1].starts_with('/') || string_parts[n+1].starts_with('\\')))) {
+                    if (!string_parts[n].is_empty()
+                            && !(string_parts[n].ends_with('/') || string_parts[n].ends_with('\\')))
+                        || (!string_parts[n+1].is_empty()
+                            && (!(string_parts[n+1].starts_with('/') || string_parts[n+1].starts_with('\\')))) {
                         span_lint_and_note(
-                           cx,
-                    PATH_FROM_FORMAT,
-                        expr.span,
-                        "`format!(..)` used to form `PathBuf`",
-                        None,
-                        "if it fits your use case, you may want to consider using `Path::new()` and `.join()` to make it OS-agnostic and improve code readability.",
+                            cx,
+                            PATH_FROM_FORMAT,
+                            expr.span,
+                            "`format!(..)` used to form `PathBuf`",
+                            None,
+                            "if it fits your use case, you may want to consider using `Path::new()` and `.join()` to make it OS-agnostic and improve code readability.",
                         );
                         return;
                     }
@@ -115,8 +118,7 @@ fn push_comps(string: &mut String, path: &Path) {
         let x = n.as_os_str().to_string_lossy().to_string();
         if string.is_empty() {
             string.push_str(&format!("Path::new(\"{x}\")"));
-        }
-        else {
+        } else {
             string.push_str(&format!(".join(\"{x}\")"));
         }
     }
