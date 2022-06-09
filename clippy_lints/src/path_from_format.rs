@@ -16,6 +16,10 @@ declare_clippy_lint! {
     /// ### Why is this bad?
     /// It is not OS-agnostic, and can be harder to read.
     ///
+    /// ### Known Problems
+    /// `.join()` introduces additional allocations that are not present when `Pathbuf::push` is
+    /// used instead.
+    ///
     /// ### Example
     /// ```rust
     /// use std::path::PathBuf;
