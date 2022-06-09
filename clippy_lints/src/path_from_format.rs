@@ -7,6 +7,7 @@ use rustc_hir::{Expr, ExprKind};
 use rustc_lint::{LateContext, LateLintPass};
 use rustc_session::{declare_lint_pass, declare_tool_lint};
 use rustc_span::sym;
+use std::fmt::Write as _;
 use std::path::Path;
 
 declare_clippy_lint! {
@@ -60,10 +61,16 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
                 let order_of_real_vars: Vec<usize> = format_args.formatters.iter().map(|(x, _)| *x).collect();
                 let mut sugg = String::new();
                 for n in 0..real_vars.len() {
-                    if (!string_parts[n].is_empty()
-                            && !(string_parts[n].ends_with('/') || string_parts[n].ends_with('\\')))
-                        || (!string_parts[n+1].is_empty()
-                            && (!(string_parts[n+1].starts_with('/') || string_parts[n+1].starts_with('\\')))) {
+                    if !(
+                            string_parts[n].is_empty()
+                            || string_parts[n].ends_with('/')
+                            || string_parts[n].ends_with('\\')
+                        )
+                        || !(
+                            string_parts[n+1].is_empty()
+                            || string_parts[n+1].starts_with('/')
+                            || string_parts[n+1].starts_with('\\')
+                        ){
                         span_lint_and_note(
                             cx,
                             PATH_FROM_FORMAT,
@@ -80,7 +87,7 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
                         }
                         else {
                             push_comps(&mut sugg, Path::new(string_parts[0]));
-                            sugg.push_str(&format!(".join({})", real_vars[order_of_real_vars[0]]));
+                            let _ = write!(sugg, ".join({})", real_vars[order_of_real_vars[0]]);
                         }
                     }
                     else if string_parts[n].is_empty() {
@@ -92,7 +99,7 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
                             string.remove(0);
                         }
                         push_comps(&mut sugg, Path::new(&string));
-                        sugg.push_str(&format!(".join({})", real_vars[order_of_real_vars[n]]));
+                        let _ = write!(sugg, ".join({})", real_vars[order_of_real_vars[n]]);
                     }
                 }
                 if !string_parts[real_vars.len()].is_empty() {
@@ -121,9 +128,9 @@ fn push_comps(string: &mut String, path: &Path) {
     for n in comps {
         let x = n.as_os_str().to_string_lossy().to_string();
         if string.is_empty() {
-            string.push_str(&format!("Path::new(\"{x}\")"));
+            let _ = write!(string, "Path::new(\"{x}\")");
         } else {
-            string.push_str(&format!(".join(\"{x}\")"));
+            let _ = write!(string, ".join(\"{x}\")");
         }
     }
 }
