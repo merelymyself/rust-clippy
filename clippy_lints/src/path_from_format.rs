@@ -1,4 +1,4 @@
-use clippy_utils::diagnostics::span_lint_and_sugg;
+use clippy_utils::diagnostics::{span_lint_and_note, span_lint_and_sugg};
 use clippy_utils::macros::{root_macro_call, FormatArgsExpn};
 use clippy_utils::sugg::Sugg;
 use clippy_utils::ty::is_type_diagnostic_item;
@@ -7,6 +7,7 @@ use rustc_hir::{Expr, ExprKind};
 use rustc_lint::{LateContext, LateLintPass};
 use rustc_session::{declare_lint_pass, declare_tool_lint};
 use rustc_span::sym;
+use std::path::Path;
 
 declare_clippy_lint! {
     /// ### What it does
@@ -55,12 +56,24 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
                 let order_of_real_vars: Vec<usize> = format_args.formatters.iter().map(|(x, _)| *x).collect();
                 let mut sugg = String::new();
                 for n in 0..real_vars.len() {
+                    if (!string_parts[n].is_empty() && !(string_parts[n].ends_with('/') || string_parts[n].ends_with('\\'))) || (!string_parts[n+1].is_empty() && (!(string_parts[n+1].starts_with('/') || string_parts[n+1].starts_with('\\')))) {
+                        span_lint_and_note(
+                           cx,
+                    PATH_FROM_FORMAT,
+                        expr.span,
+                        "`format!(..)` used to form `PathBuf`",
+                        None,
+                        "if it fits your use case, you may want to consider using `Path::new()` and `.join()` to make it OS-agnostic and improve code readability.",
+                        );
+                        return;
+                    }
                     if n == 0 {
                         if string_parts[0].is_empty() {
                             sugg = format!("Path::new({})", real_vars[order_of_real_vars[0]]);
                         }
                         else {
-                            sugg = format!("Path::new(\"{}\").join({y})", string_parts[0], y = real_vars[order_of_real_vars[0]]);
+                            push_comps(&mut sugg, Path::new(string_parts[0]));
+                            sugg.push_str(&format!(".join({})", real_vars[order_of_real_vars[0]]));
                         }
                     }
                     else if string_parts[n].is_empty() {
@@ -71,7 +84,8 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
                         if string.starts_with('/') || string.starts_with('\\') {
                             string.remove(0);
                         }
-                    sugg = format!("{sugg}.join(\"{}\").join({y})", string, y = real_vars[order_of_real_vars[n]]);
+                        push_comps(&mut sugg, Path::new(&string));
+                        sugg.push_str(&format!(".join({})", real_vars[order_of_real_vars[n]]));
                     }
                 }
                 if !string_parts[real_vars.len()].is_empty() {
@@ -79,18 +93,31 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
                     if string.starts_with('/') || string.starts_with('\\') {
                         string.remove(0);
                     }
-                    sugg = format!("{sugg}.join(\"{}\")", string);
+                    push_comps(&mut sugg, Path::new(&string));
                 }
                 span_lint_and_sugg(
                     cx,
                     PATH_FROM_FORMAT,
                     expr.span,
                     "`format!(..)` used to form `PathBuf`",
-                    "consider using `.join()` to avoid the extra allocation",
+                    "consider using `Path::new()` and `.join()` to make it OS-agnostic and improve code readability.",
                     sugg,
                     Applicability::MaybeIncorrect,
                 );
             }
+        }
+    }
+}
+
+fn push_comps(string: &mut String, path: &Path) {
+    let comps = path.components();
+    for n in comps {
+        let x = n.as_os_str().to_string_lossy().to_string();
+        if string.is_empty() {
+            string.push_str(&format!("Path::new(\"{x}\")"));
+        }
+        else {
+            string.push_str(&format!(".join(\"{x}\")"));
         }
     }
 }
