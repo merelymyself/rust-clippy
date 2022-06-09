@@ -77,7 +77,7 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
                             expr.span,
                             "`format!(..)` used to form `PathBuf`",
                             None,
-                            "if it fits your use case, you may want to consider using `Path::new()` and `.join()` to make it OS-agnostic and improve code readability.",
+                            "if it fits your use case, you may want to consider using `Path::new()` and `.join()` to make it OS-agnostic and improve code readability",
                         );
                         return;
                     }
@@ -114,7 +114,7 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
                     PATH_FROM_FORMAT,
                     expr.span,
                     "`format!(..)` used to form `PathBuf`",
-                    "consider using `Path::new()` and `.join()` to make it OS-agnostic and improve code readability.",
+                    "consider using `Path::new()` and `.join()` to make it OS-agnostic and improve code readability",
                     sugg,
                     Applicability::MaybeIncorrect,
                 );
