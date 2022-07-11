@@ -79,7 +79,7 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
                             }
                         }
                         else if n < real_vars.len() {
-                            push_comps(&mut sugg, &part.to_string(), true);
+                            push_comps(&mut sugg, part, true);
                             let _ = write!(sugg, ".join({})", arg);
                         }
                         else {
@@ -88,7 +88,7 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
                     }
                 }
                 if real_vars.len() < string_parts.len() {
-                    push_comps(&mut sugg, &string_parts[real_vars.len()], true);
+                    push_comps(&mut sugg, string_parts[real_vars.len()], true);
                 }
                 span_lint_and_sugg(
                     cx,
