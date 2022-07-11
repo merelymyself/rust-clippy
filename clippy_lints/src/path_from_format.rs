@@ -122,14 +122,6 @@ fn push_comps(string: &mut String, path: &str, trim_first_slash: bool) {
 }
 
 fn is_valid_use_case(string: &str, string2: &str) -> bool {
-                        !(                            
-                        string.is_empty()
-                            || string.ends_with('/')
-                            || string.ends_with('\\')
-                        )
-                        || !(
-                            string2.is_empty()
-                            || string2.starts_with('/')
-                            || string2.starts_with('\\')
-                        ) 
+    !(string.is_empty() || string.ends_with('/') || string.ends_with('\\'))
+        || !(string2.is_empty() || string2.starts_with('/') || string2.starts_with('\\'))
 }
