@@ -57,17 +57,6 @@ LL |     Path::new("foo").join("foooo").join(base_path1).join("bar").join("barrr
 error: `format!(..)` used to form `PathBuf`
   --> $DIR/path_from_format.rs:13:5
    |
-LL |     PathBuf::from(format!("foo/foooo/{base_path1}/bar/barrr"));
-   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   |
-help: consider using `Path::new()` and `.join()` to make it OS-agnostic and improve code readability
-   |
-LL |     Path::new("foo").join("foooo").join(base_path1).join("bar").join("barrr");
-   |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-error: `format!(..)` used to form `PathBuf`
-  --> $DIR/path_from_format.rs:14:5
-   |
 LL |     PathBuf::from(format!("foo/foooo/{base_path1}/bar/barrr/{base_path2}"));
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    |
@@ -77,7 +66,7 @@ LL |     Path::new("foo").join("foooo").join(base_path1).join("bar").join("barrr
    |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 error: `format!(..)` used to form `PathBuf`
-  --> $DIR/path_from_format.rs:15:5
+  --> $DIR/path_from_format.rs:14:5
    |
 LL |     PathBuf::from(format!("{base_path2}/foo/{base_path1}/bar"));
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -88,7 +77,7 @@ LL |     Path::new(base_path2).join("foo").join(base_path1).join("bar");
    |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 error: `format!(..)` used to form `PathBuf`
-  --> $DIR/path_from_format.rs:18:5
+  --> $DIR/path_from_format.rs:17:5
    |
 LL |     PathBuf::from(format!(r"C:/{base_path2}/foo/{base_path1}/bar"));
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -99,7 +88,7 @@ LL |     Path::new("C:").join(base_path2).join("foo").join(base_path1).join("bar
    |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 error: `format!(..)` used to form `PathBuf`
-  --> $DIR/path_from_format.rs:19:5
+  --> $DIR/path_from_format.rs:18:5
    |
 LL |     PathBuf::from(format!("C:/{base_path2}/foo/{base_path1}/bar"));
    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -109,5 +98,5 @@ help: consider using `Path::new()` and `.join()` to make it OS-agnostic and impr
 LL |     Path::new("C:").join(base_path2).join("foo").join(base_path1).join("bar");
    |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-error: aborting due to 10 previous errors
+error: aborting due to 9 previous errors
 
