@@ -112,7 +112,10 @@ fn push_comps(string: &mut String, path: &str, trim_first_slash: bool) {
     let path = Path::new(&path);
     let comps = path.components();
     for n in comps {
-        let x = n.as_os_str().to_string_lossy().to_string();
+        let mut x = n.as_os_str().to_string_lossy().to_string();
+        if x.ends_with('/') || x.ends_with('\\') {
+            x.pop();
+        }
         if string.is_empty() {
             let _ = write!(string, "Path::new(\"{x}\")");
         } else {

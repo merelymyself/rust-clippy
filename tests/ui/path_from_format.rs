@@ -15,4 +15,6 @@ fn main() {
     PathBuf::from(format!("{base_path2}/foo/{base_path1}/bar"));
     PathBuf::from(format!("foo/{base_path1}a/bar"));
     PathBuf::from(format!("foo/a{base_path1}/bar"));
+    PathBuf::from(format!(r"C:\{base_path2}\foo\{base_path1}\bar"));
+    PathBuf::from(format!("C:\\{base_path2}\\foo\\{base_path1}\\bar"));
 }
