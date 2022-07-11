@@ -1,4 +1,4 @@
-use clippy_utils::diagnostics::{span_lint_and_note, span_lint_and_sugg};
+use clippy_utils::diagnostics::span_lint_and_sugg;
 use clippy_utils::macros::{root_macro_call, FormatArgsExpn};
 use clippy_utils::sugg::Sugg;
 use clippy_utils::ty::is_type_diagnostic_item;
@@ -54,60 +54,41 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
             then {
                 let format_string_parts = format_args.format_string_parts;
                 let format_value_args = format_args.value_args;
-                let mut string_parts: Vec<&str> = format_string_parts.iter().map(rustc_span::Symbol::as_str).collect();
-                string_parts.push("");
+                let string_parts: Vec<&str> = format_string_parts.iter().map(rustc_span::Symbol::as_str).collect();
                 let mut applicability = Applicability::MachineApplicable;
                 let real_vars: Vec<Sugg<'_>> = format_value_args.iter().map(|x| Sugg::hir_with_applicability(cx, x, "..", &mut applicability)).collect();
                 let order_of_real_vars: Vec<usize> = format_args.formatters.iter().map(|(x, _)| *x).collect();
+                let mut arguments_in_order = Vec::new();
+                for n in 0..real_vars.len() {
+                    arguments_in_order.push(real_vars[order_of_real_vars[n]].clone());
+                }
+                let mut paths_zip = string_parts.iter().take(arguments_in_order.len()).zip(arguments_in_order);
                 let mut sugg = String::new();
                 for n in 0..real_vars.len() {
-                    if !(
-                            string_parts[n].is_empty()
-                            || string_parts[n].ends_with('/')
-                            || string_parts[n].ends_with('\\')
-                        )
-                        || !(
-                            string_parts[n+1].is_empty()
-                            || string_parts[n+1].starts_with('/')
-                            || string_parts[n+1].starts_with('\\')
-                        ){
-                        span_lint_and_note(
-                            cx,
-                            PATH_FROM_FORMAT,
-                            expr.span,
-                            "`format!(..)` used to form `PathBuf`",
-                            None,
-                            "if it fits your use case, you may want to consider using `Path::new()` and `.join()` to make it OS-agnostic and improve code readability",
-                        );
-                        return;
-                    }
-                    if n == 0 {
-                        if string_parts[0].is_empty() {
-                            sugg = format!("Path::new({})", real_vars[order_of_real_vars[0]]);
+                    if let Some((part, arg)) = paths_zip.next() {
+                        if is_valid_use_case(string_parts[n], string_parts.get(n+1).unwrap_or(&"")) {
+                            return;
+                        }
+                        if n == 0 {
+                            if part.is_empty() {
+                                sugg = format!("Path::new({})", arg);
+                            }
+                            else {
+                                push_comps(&mut sugg, part, false);
+                                let _ = write!(sugg, ".join({})", arg);
+                            }
+                        }
+                        else if n < real_vars.len() {
+                            push_comps(&mut sugg, &part.to_string(), true);
+                            let _ = write!(sugg, ".join({})", arg);
                         }
                         else {
-                            push_comps(&mut sugg, Path::new(string_parts[0]));
-                            let _ = write!(sugg, ".join({})", real_vars[order_of_real_vars[0]]);
+                            sugg = format!("{sugg}.join({})", arg);
                         }
-                    }
-                    else if string_parts[n].is_empty() {
-                            sugg = format!("{sugg}.join({})", real_vars[order_of_real_vars[n]]);
-                    }
-                    else {
-                        let mut string = String::from(string_parts[n]);
-                        if string.starts_with('/') || string.starts_with('\\') {
-                            string.remove(0);
-                        }
-                        push_comps(&mut sugg, Path::new(&string));
-                        let _ = write!(sugg, ".join({})", real_vars[order_of_real_vars[n]]);
                     }
                 }
-                if !string_parts[real_vars.len()].is_empty() {
-                    let mut string = String::from(string_parts[real_vars.len()]);
-                    if string.starts_with('/') || string.starts_with('\\') {
-                        string.remove(0);
-                    }
-                    push_comps(&mut sugg, Path::new(&string));
+                if real_vars.len() < string_parts.len() {
+                    push_comps(&mut sugg, &string_parts[real_vars.len()], true);
                 }
                 span_lint_and_sugg(
                     cx,
@@ -123,7 +104,12 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
     }
 }
 
-fn push_comps(string: &mut String, path: &Path) {
+fn push_comps(string: &mut String, path: &str, trim_first_slash: bool) {
+    let mut path = path.to_string();
+    if (path.starts_with('/') || path.starts_with('\\')) && trim_first_slash {
+        path.remove(0);
+    }
+    let path = Path::new(&path);
     let comps = path.components();
     for n in comps {
         let x = n.as_os_str().to_string_lossy().to_string();
@@ -133,4 +119,17 @@ fn push_comps(string: &mut String, path: &Path) {
             let _ = write!(string, ".join(\"{x}\")");
         }
     }
+}
+
+fn is_valid_use_case(string: &str, string2: &str) -> bool {
+                        !(                            
+                        string.is_empty()
+                            || string.ends_with('/')
+                            || string.ends_with('\\')
+                        )
+                        || !(
+                            string2.is_empty()
+                            || string2.starts_with('/')
+                            || string2.starts_with('\\')
+                        ) 
 }

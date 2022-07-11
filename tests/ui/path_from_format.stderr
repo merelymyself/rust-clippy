@@ -87,21 +87,5 @@ help: consider using `Path::new()` and `.join()` to make it OS-agnostic and impr
 LL |     Path::new(base_path2).join("foo").join(base_path1).join("bar");
    |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-error: `format!(..)` used to form `PathBuf`
-  --> $DIR/path_from_format.rs:16:5
-   |
-LL |     PathBuf::from(format!("foo/{base_path1}a/bar"));
-   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   |
-   = note: if it fits your use case, you may want to consider using `Path::new()` and `.join()` to make it OS-agnostic and improve code readability
-
-error: `format!(..)` used to form `PathBuf`
-  --> $DIR/path_from_format.rs:17:5
-   |
-LL |     PathBuf::from(format!("foo/a{base_path1}/bar"));
-   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   |
-   = note: if it fits your use case, you may want to consider using `Path::new()` and `.join()` to make it OS-agnostic and improve code readability
-
-error: aborting due to 10 previous errors
+error: aborting due to 8 previous errors
 
