@@ -326,7 +326,6 @@ mod panic_unimplemented;
 mod partialeq_ne_impl;
 mod partialeq_to_none;
 mod pass_by_ref_or_value;
-mod path_buf_push_overwrite;
 mod path_from_format;
 mod pattern_type_mismatch;
 mod precedence;
