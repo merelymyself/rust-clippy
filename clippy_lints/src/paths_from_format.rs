@@ -60,7 +60,7 @@ impl<'tcx> LateLintPass<'tcx> for PathsFromFormat {
                 let mut paths_zip = string_parts.iter().take(real_vars.len()).zip(real_vars.clone());
                 let mut sugg = String::new();
                 if let Some((part, arg)) = paths_zip.next() {
-                    if is_valid_use_case(string_parts.get(0).unwrap_or(&""), string_parts.get(1).unwrap_or(&"")) {
+                    if is_valid_use_case(string_parts.first().unwrap_or(&""), string_parts.get(1).unwrap_or(&"")) {
                         return;
                     }
                     if part.is_empty() {
