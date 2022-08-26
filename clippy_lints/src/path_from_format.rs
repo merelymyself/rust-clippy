@@ -52,19 +52,17 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
             if cx.tcx.item_name(macro_call.def_id) == sym::format;
             if let Some(format_args) = FormatArgsExpn::find_nested(cx, &args[0], macro_call.expn);
             then {
-                let format_string_parts = format_args.format_string_parts;
-                let format_value_args = format_args.value_args;
+                let format_string_parts = format_args.format_string.parts;
+                let format_value_args = format_args.args;
                 let string_parts: Vec<&str> = format_string_parts.iter().map(rustc_span::Symbol::as_str).collect();
                 let mut applicability = Applicability::MachineApplicable;
-                let real_vars: Vec<Sugg<'_>> = format_value_args.iter().map(|x| Sugg::hir_with_applicability(cx, x, "..", &mut applicability)).collect();
-                let order_of_real_vars: Vec<usize> = format_args.formatters.iter().map(|(x, _)| *x).collect();
-                let mut arguments_in_order = Vec::new();
-                for n in 0..real_vars.len() {
-                    arguments_in_order.push(real_vars[order_of_real_vars[n]].clone());
-                }
-                let mut paths_zip = string_parts.iter().take(arguments_in_order.len()).zip(arguments_in_order);
+                let real_vars: Vec<Sugg<'_>> = format_value_args.iter().map(|x| Sugg::hir_with_applicability(cx, x.param.value, "..", &mut applicability)).collect();
+                let mut paths_zip = string_parts.iter().take(real_vars.len()).zip(real_vars.clone());
                 let mut sugg = String::new();
                 if let Some((part, arg)) = paths_zip.next() {
+                    if is_valid_use_case(string_parts.get(0).unwrap_or(&""), string_parts.get(1).unwrap_or(&"")) {
+                        return;
+                    }
                     if part.is_empty() {
                         sugg = format!("Path::new({})", arg);
                     }
@@ -107,11 +105,11 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
 fn push_comps(string: &mut String, path: &str, trim_first_slash: bool) {
     let mut path = path.to_string();
     if trim_first_slash {
-        path.trim_start_matches(|c| c == '\\' || c == '/');
+        path = path.trim_start_matches(|c| c == '\\' || c == '/').to_string();
     }
     for n in Path::new(&path).components() {
         let mut x = n.as_os_str().to_string_lossy().to_string();
-        x.trim_end_matches(|c| c == '/' || c == '\\');
+        x = x.trim_end_matches(|c| c == '/' || c == '\\').to_string();
         if string.is_empty() {
             let _ = write!(string, "Path::new(\"{x}\")");
         } else {
