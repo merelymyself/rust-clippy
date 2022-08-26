@@ -34,14 +34,14 @@ declare_clippy_lint! {
     /// Path::new(base_path).join("foo").join("bar");
     /// ```
     #[clippy::version = "1.62.0"]
-    pub PATH_FROM_FORMAT,
+    pub PATHS_FROM_FORMAT,
     pedantic,
     "builds a `PathBuf` from a format macro"
 }
 
-declare_lint_pass!(PathFromFormat => [PATH_FROM_FORMAT]);
+declare_lint_pass!(PathsFromFormat => [PATHS_FROM_FORMAT]);
 
-impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
+impl<'tcx> LateLintPass<'tcx> for PathsFromFormat {
     fn check_expr(&mut self, cx: &LateContext<'tcx>, expr: &'tcx Expr<'_>) {
         if_chain! {
             if let ExprKind::Call(_, args) = expr.kind;
@@ -90,7 +90,7 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
                 }
                 span_lint_and_sugg(
                     cx,
-                    PATH_FROM_FORMAT,
+                    PATHS_FROM_FORMAT,
                     expr.span,
                     "`format!(..)` used to form `PathBuf`",
                     "consider using `Path::new()` and `.join()` to make it OS-agnostic and improve code readability",

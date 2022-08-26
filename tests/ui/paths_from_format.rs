@@ -1,4 +1,4 @@
-#![warn(clippy::path_from_format)]
+#![warn(clippy::paths_from_format)]
 
 use std::path::PathBuf;
 

@@ -474,7 +474,7 @@ store.register_lints(&[
     partialeq_to_none::PARTIALEQ_TO_NONE,
     pass_by_ref_or_value::LARGE_TYPES_PASSED_BY_VALUE,
     pass_by_ref_or_value::TRIVIALLY_COPY_PASS_BY_REF,
-    path_from_format::PATH_FROM_FORMAT,
+    paths_from_format::PATHS_FROM_FORMAT,
     pattern_type_mismatch::PATTERN_TYPE_MISMATCH,
     precedence::PRECEDENCE,
     ptr::CMP_NULL,
