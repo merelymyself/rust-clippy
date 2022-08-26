@@ -64,19 +64,19 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
                 }
                 let mut paths_zip = string_parts.iter().take(arguments_in_order.len()).zip(arguments_in_order);
                 let mut sugg = String::new();
-                for n in 0..real_vars.len() {
+                if let Some((part, arg)) = paths_zip.next() {
+                    if part.is_empty() {
+                        sugg = format!("Path::new({})", arg);
+                    }
+                    else {
+                        push_comps(&mut sugg, part, false);
+                        let _ = write!(sugg, ".join({})", arg);
+                    }
+                }
+                for n in 1..real_vars.len() {
                     if let Some((part, arg)) = paths_zip.next() {
-                        if is_valid_use_case(string_parts[n], string_parts.get(n+1).unwrap_or(&"")) {
+                        if is_valid_use_case(string_parts.get(n).unwrap_or(&""), string_parts.get(n+1).unwrap_or(&"")) {
                             return;
-                        }
-                        if n == 0 {
-                            if part.is_empty() {
-                                sugg = format!("Path::new({})", arg);
-                            }
-                            else {
-                                push_comps(&mut sugg, part, false);
-                                let _ = write!(sugg, ".join({})", arg);
-                            }
                         }
                         else if n < real_vars.len() {
                             push_comps(&mut sugg, part, true);
@@ -106,16 +106,12 @@ impl<'tcx> LateLintPass<'tcx> for PathFromFormat {
 
 fn push_comps(string: &mut String, path: &str, trim_first_slash: bool) {
     let mut path = path.to_string();
-    if (path.starts_with('/') || path.starts_with('\\')) && trim_first_slash {
-        path.remove(0);
+    if trim_first_slash {
+        path.trim_start_matches(|c| c == '\\' || c == '/');
     }
-    let path = Path::new(&path);
-    let comps = path.components();
-    for n in comps {
+    for n in Path::new(&path).components() {
         let mut x = n.as_os_str().to_string_lossy().to_string();
-        if x.ends_with('/') || x.ends_with('\\') {
-            x.pop();
-        }
+        x.trim_end_matches(|c| c == '/' || c == '\\');
         if string.is_empty() {
             let _ = write!(string, "Path::new(\"{x}\")");
         } else {
