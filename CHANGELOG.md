@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 See [Changelog Update](book/src/development/infrastructure/changelog_update.md) if you want to update this
 document.
 
-## Unreleased / In Rust Nightly
+## Unreleased / In Rust Nighty
 
 [d7b5cbf0...master](https://github.com/rust-lang/rust-clippy/compare/d7b5cbf0...master)
 
