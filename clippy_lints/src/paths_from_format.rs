@@ -64,11 +64,11 @@ impl<'tcx> LateLintPass<'tcx> for PathsFromFormat {
                         return;
                     }
                     if part.is_empty() {
-                        sugg = format!("Path::new({})", arg);
+                        sugg = format!("Path::new(&{})", arg);
                     }
                     else {
                         push_comps(&mut sugg, part, false);
-                        let _ = write!(sugg, ".join({})", arg);
+                        let _ = write!(sugg, ".join(&{})", arg);
                     }
                 }
                 for n in 1..real_vars.len() {
@@ -78,10 +78,10 @@ impl<'tcx> LateLintPass<'tcx> for PathsFromFormat {
                         }
                         else if n < real_vars.len() {
                             push_comps(&mut sugg, part, true);
-                            let _ = write!(sugg, ".join({})", arg);
+                            let _ = write!(sugg, ".join(&{})", arg);
                         }
                         else {
-                            sugg = format!("{sugg}.join({})", arg);
+                            sugg = format!("{sugg}.join(&{})", arg);
                         }
                     }
                 }
