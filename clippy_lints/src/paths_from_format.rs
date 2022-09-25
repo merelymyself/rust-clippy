@@ -67,7 +67,7 @@ impl<'tcx> LateLintPass<'tcx> for PathsFromFormat {
                         sugg = format!("Path::new(&{})", arg);
                     }
                     else {
-                        push_comps(&mut sugg, part, false);
+                        push_comps(&mut sugg, part);
                         let _ = write!(sugg, ".join(&{})", arg);
                     }
                 }
@@ -77,7 +77,7 @@ impl<'tcx> LateLintPass<'tcx> for PathsFromFormat {
                             return;
                         }
                         else if n < real_vars.len() {
-                            push_comps(&mut sugg, part, true);
+                            push_comps(&mut sugg, part);
                             let _ = write!(sugg, ".join(&{})", arg);
                         }
                         else {
@@ -86,7 +86,7 @@ impl<'tcx> LateLintPass<'tcx> for PathsFromFormat {
                     }
                 }
                 if real_vars.len() < string_parts.len() {
-                    push_comps(&mut sugg, string_parts[real_vars.len()], true);
+                    push_comps(&mut sugg, string_parts[real_vars.len()]);
                 }
                 span_lint_and_sugg(
                     cx,
@@ -102,17 +102,17 @@ impl<'tcx> LateLintPass<'tcx> for PathsFromFormat {
     }
 }
 
-fn push_comps(string: &mut String, path: &str, trim_first_slash: bool) {
+fn push_comps(string: &mut String, path: &str) {
     let mut path = path.to_string();
-    if trim_first_slash {
+    if !string.is_empty() {
         path = path.trim_start_matches(|c| c == '\\' || c == '/').to_string();
     }
     for n in Path::new(&path).components() {
         let mut x = n.as_os_str().to_string_lossy().to_string();
-        x = x.trim_end_matches(|c| c == '/' || c == '\\').to_string();
         if string.is_empty() {
             let _ = write!(string, "Path::new(\"{x}\")");
         } else {
+            x = x.trim_end_matches(|c| c == '/' || c == '\\').to_string();
             let _ = write!(string, ".join(\"{x}\")");
         }
     }
